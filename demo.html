@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+虚拟dom会是常驻内存
+
+dom没有占用内存只有两种情况
+1。dom和js双双被回收
+    dom在页面里面没有了，js对这个dom的引用和操作没有了
+2。根本不存在
+
+游离的dom
+存在dom，dom已经ok了，但是有js对dom的绑定，还是会有内存泄露
+例：
+vue，vue把所有dom都变成了虚拟dom
+在template里面编译的时候用的是with
+with就会导致在GC放弃回收
+虚拟dom就会常驻你的内存中
+为什么vue为什么业务代码多了，页面会很卡顿
+
+
+<script>
+    let detachedTree;
+    function create() {
+        var ul = document.createElement('ul')
+        for (var i = 0; i < 100; i++) {
+            var li = document.createElement('li')
+            ul.appendChild(li)
+        }
+        detachedTree = ul
+    }
+    create()
+</script>
+</body>
+</html>

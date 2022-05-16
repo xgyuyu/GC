@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">11111122223333</div>
+<div>121212</div>
+<script>
+    function log() {
+        console.log("打印信息========", '打印信息')
+    }
+    log()
+    function mark() {
+        let app = document.getElementById('app')
+        app.innerHTML = '修改'
+    }
+    function mark1() {
+        let app = document.getElementById('app')
+        app.innerHTML = '修改'
+    }
+    setTimeout(mark1)
+    new Promise((res) => {
+        mark()
+        res()
+    }).then(mark1).then(mark)
+</script>
+</body>
+</html>
+<!--
+0.requestAnimationFrame，第一贞是注册window.requestAnimationFrame，下一贞执行回调，然后循环，因为第一贞如果修改了dom树就要重排了。
+1.parseHtml 解析，然后是解析脚本script，然后编译脚本，走anonymous主函数，然后是Run Microtasks微任务，然后继续走下面，执行js
+2.layout-tree 浏览器每一个像素点都是绘制出来的，底层用的是skia渲染引擎，是在webkit源码里面的renderobject里面能看到定义了很多绘制类型, 微任务是在结构阶段是同步执行，浏览器一贞的渲染，在anonymous后面有run microtask 这个
+    位置，大小，内容
+    分层
+    层叠上下文
+3.layer-tree
+    https://www.w3.org/TR/CSS2/visuren.html#propdef-z-index
+4.paint
+    layer -> 数据 -> 绘图指令
+
+https://github.com/WebKit/WebKit/blob/main/Source/WebCore/rendering/RenderLayerCompositor.h
+
+绘图指令 -> 合成线程
+图块可以通过控制台的rendering可以查看页面的图块，layer-border，就是层叠上下文
+layer -> 图块 -> 栅格化  -> 绘制四边形
+
+栅格化，接受图块信息，绘制指令，栅格化之后的内存地址（其实就是像素信息）还有图块指令，会有一个绘制四边形的信息
+
+吧页面切成多个块，对块做栅格化，存到内存里面
+
+
+在合成线程里面，会把页面中附加有事件处理的区域标记为非快速滚动区域，合成线程会判断你当前点击的事件位置是否属于我当前图块的区域，如果不在就不需要处理，如果在的话，就会吧这个事件信息给到主线程，然后主线程再去遍历绘制记录表，也就是指令，去寻找是哪个dom，然后交给主线程来调度事件循环
+
+
+CPU：最后都是二进制的加法，计算单元，还有控制单元，存储单元，他的存储效率很快，但是存储的大小比较小，cpu都是同步执行的一些运算
+GPU：他也是计算单元，还有控制单元，存储单元，但是计算单元很多，他是并行的，
+栅格化 -> 3d加速，其实就是cpu数据变成gpu数据的像素点，因为GPU是并行的所以处理起来很快
+
+
+-->
